@@ -24,6 +24,8 @@ public interface TicTacToe {
     char lastMark();
 
     static TicTacToe buildGame() {
-        throw new UnsupportedOperationException();
+        return new ConcurrentTicTacToe();
     }
+
+    boolean isGameOver();
 }

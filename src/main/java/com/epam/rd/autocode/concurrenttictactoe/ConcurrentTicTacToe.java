@@ -1,0 +1,83 @@
+package com.epam.rd.autocode.concurrenttictactoe;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+public class ConcurrentTicTacToe implements TicTacToe{
+    private final char[][] gameBoard;
+    private  char lastMark;
+    private final ReentrantLock lock;
+    public ConcurrentTicTacToe() {
+        this.gameBoard = new char[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                gameBoard[i][j] = ' ';
+            }
+        }
+        this.lock = new ReentrantLock();
+    }
+    @Override
+    public void setMark(int x, int y, char mark) {
+        lock.lock();
+        try {
+            if (gameBoard[x][y] == ' ') {
+                gameBoard[x][y] = mark;
+                lastMark = mark;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public char[][] table() {
+        lock.lock();
+        try {
+            char[][] copyGameBoard = new char[3][3];
+            for (int i = 0; i < 3; i++) {
+                System.arraycopy(gameBoard[i], 0, copyGameBoard[i], 0, 3);
+            }
+            return copyGameBoard;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public char lastMark() {
+        return lastMark;
+    }
+
+    public boolean isGameOver() {
+        return hasWinner('X') || hasWinner('O') || isBoardFull();
+    }
+
+    private boolean isBoardFull() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(gameBoard[i][j] == 0)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean hasWinner(char mark) {
+        //Check rows
+        for (int i = 0; i < 3; i++) {
+            if (gameBoard[i][0] == mark && gameBoard[i][1] == mark && gameBoard[i][2] == mark) {
+                return true;
+            }
+        }
+        //Check columns
+        for (int i = 0; i < 3; i++) {
+            if (gameBoard[0][i] == mark && gameBoard[1][i] == mark && gameBoard[2][i] == mark) {
+                return true;
+            }
+        }
+        //Check diagonals
+        return (gameBoard[0][0] == mark && gameBoard[1][1] == mark && gameBoard[2][2] == mark)
+                || (gameBoard[2][0] == mark && gameBoard[1][1] == mark && gameBoard[0][2] == mark);
+    }
+}
