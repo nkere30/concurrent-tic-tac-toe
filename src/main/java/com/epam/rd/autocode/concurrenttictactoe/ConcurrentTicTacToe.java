@@ -5,7 +5,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConcurrentTicTacToe implements TicTacToe{
     private final char[][] gameBoard;
     private  char lastMark;
-    private final ReentrantLock lock;
     public ConcurrentTicTacToe() {
         this.gameBoard = new char[3][3];
         for (int i = 0; i < 3; i++) {
@@ -13,35 +12,24 @@ public class ConcurrentTicTacToe implements TicTacToe{
                 gameBoard[i][j] = ' ';
             }
         }
-        this.lock = new ReentrantLock();
     }
     @Override
     public void setMark(int x, int y, char mark) {
-        lock.lock();
-        try {
-            if (gameBoard[x][y] == ' ') {
-                gameBoard[x][y] = mark;
-                lastMark = mark;
-            } else {
-                throw new IllegalArgumentException();
-            }
-        } finally {
-            lock.unlock();
+        if (gameBoard[x][y] == ' ') {
+            gameBoard[x][y] = mark;
+            lastMark = mark;
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
     @Override
     public char[][] table() {
-        lock.lock();
-        try {
-            char[][] copyGameBoard = new char[3][3];
-            for (int i = 0; i < 3; i++) {
-                System.arraycopy(gameBoard[i], 0, copyGameBoard[i], 0, 3);
-            }
-            return copyGameBoard;
-        } finally {
-            lock.unlock();
+        char[][] copyGameBoard = new char[3][3];
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(gameBoard[i], 0, copyGameBoard[i], 0, 3);
         }
+        return copyGameBoard;
     }
 
     @Override
