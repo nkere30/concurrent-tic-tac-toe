@@ -1,7 +1,5 @@
 package com.epam.rd.autocode.concurrenttictactoe;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 public class ConcurrentTicTacToe implements TicTacToe{
     private final char[][] gameBoard;
     private  char lastMark;
@@ -44,7 +42,7 @@ public class ConcurrentTicTacToe implements TicTacToe{
     private boolean isBoardFull() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if(gameBoard[i][j] == 0)
+                if(gameBoard[i][j] == ' ')
                     return false;
             }
         }
